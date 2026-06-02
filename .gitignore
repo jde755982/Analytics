@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+.env.local
+*.log
+.DS_Store
+
+# On-disk LLM result cache (classification + relevance)
+server/.cache/
+
+# Prisma generated client
+server/node_modules/.prisma/
+server/src/generated/

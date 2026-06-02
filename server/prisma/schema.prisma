@@ -1,0 +1,55 @@
+// StarPal Analytics — multi-tenant schema.
+//
+// Tenancy model: a Client (e.g. Willemse) owns one or more Pals (palId values).
+// A User belongs to exactly one Client and may only ever see that Client's Pals.
+// A STAFF user (StarPal internal) provisions clients/pals and can see everything.
+//
+// The backend ALWAYS resolves the caller's allowed palIds from the DB and
+// rejects any request for a palId outside that set — the browser never sends a
+// trusted palId.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STAFF // StarPal internal: full access, provisions clients & pals
+  CLIENT // external customer: only their own client's pals
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  name      String // e.g. "Willemse"
+  createdAt DateTime @default(now())
+  users     User[]
+  pals      Pal[]
+}
+
+model Pal {
+  id       String  @id @default(cuid())
+  palId    String // the upstream StarPal palId
+  label    String // human label shown in the picker, e.g. "Willemse FR"
+  client   Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId String
+
+  @@unique([clientId, palId])
+  @@index([clientId])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(CLIENT)
+  // STAFF users may have no client; CLIENT users always belong to one.
+  client       Client?  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId     String?
+  createdAt    DateTime @default(now())
+
+  @@index([clientId])
+}
