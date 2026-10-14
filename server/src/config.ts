@@ -38,8 +38,8 @@ export interface EventSchema {
  * `textPath` is rooted at the event object, so it begins with "eventData.".
  */
 export const eventSchema: EventSchema = {
-  userQuestion: { names: ["TODO_user_msg"], textPath: "eventData.text" },
-  agentAnswer: { names: ["TODO_agent_msg"], textPath: "eventData.text" },
+  userQuestion: { names: ["user_text"], textPath: "eventData.text" },
+  agentAnswer: { names: ["bot_text"], textPath: "eventData.text" },
 };
 
 /**
