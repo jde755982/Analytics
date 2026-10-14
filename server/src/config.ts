@@ -87,6 +87,19 @@ export const relevanceFlags = [
 export type RelevanceFlag = (typeof relevanceFlags)[number];
 
 /* -------------------------------------------------------------------------- */
+/*  Voice-vs-text signal (for the "% interactions vocales" KPI).               */
+/*                                                                             */
+/*  We don't yet know how the upstream marks a voice interaction. Fill this in */
+/*  once discovery shows it (check a user_text event's eventData in the raw    */
+/*  export). Examples:                                                         */
+/*    { path: "eventData.channel", voiceValues: ["voice", "audio"] }          */
+/*    { path: "eventData.inputMode", voiceValues: ["speech"] }                */
+/*  When null, the "% interactions vocales" KPI shows "—".                     */
+/* -------------------------------------------------------------------------- */
+
+export const voiceSignal: { path: string; voiceValues: string[] } | null = null;
+
+/* -------------------------------------------------------------------------- */
 /*  Anthropic models. CONFIRM exact current model IDs against Anthropic docs   */
 /*  before relying on these — IDs change. Overridable via env.                 */
 /* -------------------------------------------------------------------------- */

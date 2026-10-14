@@ -93,3 +93,21 @@ export function avgRelevance(turns: EnrichedTurn[]): number | null {
   if (scores.length === 0) return null;
   return scores.reduce((a, b) => a + b, 0) / scores.length;
 }
+
+/** % of SCORED turns whose answer is coherent (relevance score >= 4). Null if
+ * nothing scored yet. */
+export function pctCoherent(turns: EnrichedTurn[]): number | null {
+  const scored = turns.filter((t) => !!t.relevanceScore && t.relevanceScore > 0);
+  if (scored.length === 0) return null;
+  const good = scored.filter((t) => (t.relevanceScore as number) >= 4).length;
+  return (good / scored.length) * 100;
+}
+
+/** % of CLASSIFIED turns whose question type matches `type`. Null if nothing
+ * classified yet. */
+export function pctQuestionType(turns: EnrichedTurn[], type: string): number | null {
+  const classified = turns.filter((t) => !!t.questionType);
+  if (classified.length === 0) return null;
+  const match = classified.filter((t) => t.questionType === type).length;
+  return (match / classified.length) * 100;
+}

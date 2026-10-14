@@ -161,6 +161,7 @@ api.post(
           eventNameCounts: {},
           totalEvents: 0,
           schemaConfigured: isEventSchemaConfigured(),
+          voiceShare: null,
           rawEvents: [],
           empty: true,
         });

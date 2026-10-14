@@ -229,7 +229,12 @@ export default function App() {
 
       {params && stats && !isEmpty && (
         <>
-          <KpiCards stats={stats} totalEvents={turnsQuery.data?.totalEvents ?? 0} turns={enrichedTurns} />
+          <KpiCards
+            stats={stats}
+            totalEvents={turnsQuery.data?.totalEvents ?? 0}
+            turns={enrichedTurns}
+            voiceShare={turnsQuery.data?.voiceShare ?? null}
+          />
 
           {/* Exports */}
           <div className="card">

@@ -11,7 +11,7 @@
  * comes entirely from eventSchema in config.ts (see ./lib/path.ts for textPath
  * resolution). This module contains NO event-name literals.
  */
-import { eventSchema, isEventSchemaConfigured } from "../config.js";
+import { eventSchema, isEventSchemaConfigured, voiceSignal } from "../config.js";
 import { getText } from "./path.js";
 import type { RawEvent } from "./upstream.js";
 
@@ -41,6 +41,9 @@ export interface PairingResult {
   totalEvents: number;
   /** False when eventSchema still has TODO placeholders. */
   schemaConfigured: boolean;
+  /** Share (0..1) of user-question events that came in by voice, or null when
+   * voiceSignal is not configured in config.ts. */
+  voiceShare: number | null;
 }
 
 type Role = "question" | "answer" | "other";
@@ -55,6 +58,22 @@ export function pairEvents(events: RawEvent[]): PairingResult {
   const eventNameCounts: Record<string, number> = {};
   for (const ev of events) {
     eventNameCounts[ev.eventName] = (eventNameCounts[ev.eventName] ?? 0) + 1;
+  }
+
+  // Voice share: among user-question events, the fraction whose configured
+  // voiceSignal path matches one of the voice values. null when not configured.
+  let voiceShare: number | null = null;
+  if (voiceSignal) {
+    let userEvents = 0;
+    let voiceEvents = 0;
+    const voiceSet = new Set(voiceSignal.voiceValues.map((v) => v.toLowerCase()));
+    for (const ev of events) {
+      if (!eventSchema.userQuestion.names.includes(ev.eventName)) continue;
+      userEvents++;
+      const v = getText(ev, voiceSignal.path);
+      if (v && voiceSet.has(v.toLowerCase())) voiceEvents++;
+    }
+    voiceShare = userEvents > 0 ? voiceEvents / userEvents : null;
   }
 
   const turns: Turn[] = [];
@@ -129,5 +148,6 @@ export function pairEvents(events: RawEvent[]): PairingResult {
     eventNameCounts,
     totalEvents: events.length,
     schemaConfigured: isEventSchemaConfigured(),
+    voiceShare,
   };
 }

@@ -44,6 +44,7 @@ export interface TurnsResponse {
   eventNameCounts: Record<string, number>;
   totalEvents: number;
   schemaConfigured: boolean;
+  voiceShare: number | null;
   rawEvents: RawEvent[];
   empty?: boolean;
 }
